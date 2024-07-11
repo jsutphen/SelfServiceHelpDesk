@@ -2,11 +2,14 @@ extends layout
 
 block content
   h1 Create Ticket
-  form
-    label(for="firstName")
-    input#firstName(type="text", name="firstName")
-    label(for="lastName") 
-    input#lastName(type="text", name="lastName")
-    label(for="email") 
-    input#email(type="email", name="email")
-    button(type="submit") 
+  form(method="POST")
+    div
+      label(for="firstName") First Name: 
+      input#firstName(type="text", name="firstName")
+    div
+      label(for="lastName") Last Name: 
+      input#lastName(type="text", name="lastName")
+    div
+      label(for="email") Email: 
+      input#email(type="email", name="email")
+    button(type="submit") Submit
