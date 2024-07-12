@@ -2,6 +2,7 @@ var express = require('express');
 const asyncHandler = require('express-async-handler');
 var router = express.Router();
 const Ticket = require('../models/Ticket');
+const HardwareInstallationTicket = require('../models/HardwareInstallationTicket');
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -13,14 +14,23 @@ router.get('/new-ticket', (req, res, next) =>  {
 });
 
 router.post('/new-ticket', asyncHandler(async(req, res, next) => {
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
-  const email = req.body.email;
-  const ticket = new Ticket({ 
-    firstName: firstName, 
-    lastName: lastName,
-    email: email
-  });
+  let ticket;
+  if (req.body.ticketType === 'hardwareInstallation') {
+    ticket = new HardwareInstallationTicket({ 
+      oldLocation: req.body.oldLocation,
+      newLocation: req.body.newLocation,
+      hardware: req.body.hardware,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+    });
+  } else {
+    ticket = new Ticket({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+    });
+  }
   let id;
   await ticket.save().then( savedTicket =>
     id = savedTicket.id
