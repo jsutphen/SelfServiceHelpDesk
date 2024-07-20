@@ -1,5 +1,34 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  script(src="javascripts/newTicketLayout.js") 
+    
+  h1 Self Service Helpdesk 
+  h2 Ticket Erstellen 
+  form(method="POST")
+    div
+      label(for="ticketType") 
+      select#ticketType(name="ticketType") 
+        option(value='pleaseChoose' selected) Bitte Thema auswählen
+        option(value="hardwareInstallation")  Hardware-Installation
+    div#contactFields
+      div
+        label(for="firstName") Vorname: 
+        input#firstName(type="text", name="firstName" required)
+      div
+        label(for="lastName") Nachname: 
+        input#lastName(type="text", name="lastName" required)
+      div
+        label(for="email") Email: 
+        input#email(type="email", name="email" required)
+    div#hardwareInstallationFields
+      div
+        label(for="oldLocation") Alter Arbeitsplatz (Raumnr., Gebäude)
+        input#oldLocation(type="text", name="oldLocation" required)
+      div
+        label(for="newLocation") Neuer Arbeitsplatz (Raumnr., Gebäude)
+        input#newLocation(type="text", name="newLocation" required)
+      div 
+        label(for="hardware") Hardware
+        input#hardware(type="text", name="hardware" required)
+    button(type="submit") Absenden
