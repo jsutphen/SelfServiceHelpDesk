@@ -1,0 +1,24 @@
+body {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3rem;
+}
+
+* {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+input, button, select {
+  width: 100%;
+}
+
+form > div {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+form > button {
+  margin-top: 2.5rem;
+}
