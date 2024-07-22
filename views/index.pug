@@ -5,6 +5,8 @@ block content
     
   h1 Self Service Helpdesk 
   h2 Ticket Erstellen 
+  if user 
+    p Angemeldet mit Nutzer: #{user.username}
   form(method="POST")
     div
       label(for="ticketType") 

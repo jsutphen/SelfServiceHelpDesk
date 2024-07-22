@@ -5,6 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 require('dotenv').config();
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
 main().catch(err => console.log(err));
 async function main() {
@@ -12,6 +15,7 @@ async function main() {
 }
 
 var indexRouter = require('./routes/index');
+const User = require('./models/User');
 
 var app = express();
 
@@ -20,6 +24,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
+app.use(session({ secret: 'hardware', resave: false, saveUninitialized: false }));
+app.use(passport.session());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -41,6 +47,38 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+passport.use(
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.findOne({ username: username });
+
+      if (!user) {
+        return done(null, false, { message: "Incorrect username" });
+      }
+      if (user.password !== password) {
+        return done(null, false, { message: "Incorrect password" });
+      }
+      return done(null, user);
+    } catch(err) {
+      return done(err);
+    }
+  })
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+
+    done(null, user);
+  } catch(err) {
+    done(err);
+  }
 });
 
 module.exports = app;

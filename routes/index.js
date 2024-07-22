@@ -3,10 +3,12 @@ const asyncHandler = require('express-async-handler');
 var router = express.Router();
 const Ticket = require('../models/Ticket');
 const HardwareInstallationTicket = require('../models/HardwareInstallationTicket');
+const User = require('../models/User');
+const passport = require('passport');
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.render('index');
+  res.render('index', { user: req.user });
 });
 
 router.get('/new-ticket', (req, res, next) =>  {
@@ -48,5 +50,34 @@ router.get('/tickets', asyncHandler(async (req, res, next) => {
   const tickets = await Ticket.find({});
   res.render('ticketsDashBoard', { tickets: tickets });
 }));
+
+router.get('/signup', (req, res, next) => {
+  res.render('signUp');
+});
+
+router.post('/signup', asyncHandler(async (req, res, next) => {
+  const alreadyExistsCheck = User.findOne({ username: req.body.username });
+  if (alreadyExistsCheck != null) {
+    // res.send(alreadyExistsCheck )
+    res.render('signUp', { userError: 'Dieser Nutzername ist bereits vergeben!' });
+  }
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password
+  });
+  await user.save();
+  res.redirect('/');
+}));
+
+router.get('/login', (req, res, next) => {
+  res.render('login');
+});
+
+router.post('/login', 
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/'
+  })
+);
 
 module.exports = router;

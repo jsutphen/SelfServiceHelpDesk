@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 Sign Up
+  form(method="POST")
+    div
+      label(for="username") Nutzername  
+      if userError 
+        p(style='color:red;') #{userError}
+      input#username(type="text", name="username" required)
+    div
+      label(for="password") Passwort
+      input#password(type="password", name="password" required)
+    div 
+      label(for="password") Passwort wiederholen 
+      input#password(type="password", name="passwordRepeat" required)
+    button(type="submit") Absenden
