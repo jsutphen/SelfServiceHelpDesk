@@ -5,6 +5,7 @@ const Ticket = require('../models/Ticket');
 const HardwareInstallationTicket = require('../models/HardwareInstallationTicket');
 const User = require('../models/User');
 const passport = require('passport');
+const bcrypt = require('bcryptjs');
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -56,17 +57,19 @@ router.get('/signup', (req, res, next) => {
 });
 
 router.post('/signup', asyncHandler(async (req, res, next) => {
-  const alreadyExistsCheck = User.findOne({ username: req.body.username });
+  const alreadyExistsCheck = await User.findOne({ username: req.body.username });
   if (alreadyExistsCheck != null) {
     // res.send(alreadyExistsCheck )
     res.render('signUp', { userError: 'Dieser Nutzername ist bereits vergeben!' });
   }
-  const user = new User({
-    username: req.body.username,
-    password: req.body.password
-  });
-  await user.save();
-  res.redirect('/');
+  bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
+    const user = new User({
+      username: req.body.username,
+      password: hashedPassword
+    });
+    await user.save();
+    res.redirect('/');
+  })
 }));
 
 router.get('/login', (req, res, next) => {
