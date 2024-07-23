@@ -63,12 +63,20 @@ router.post('/signup', asyncHandler(async (req, res, next) => {
     res.render('signUp', { userError: 'Dieser Nutzername ist bereits vergeben!' });
   }
   bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
+    if (err) {
+      next(err);
+    }
     const user = new User({
       username: req.body.username,
       password: hashedPassword
     });
     await user.save();
-    res.redirect('/');
+    req.login(user, function(err) {
+      if (err) {
+        next(err);
+      }
+      res.redirect('/');
+    })
   })
 }));
 
