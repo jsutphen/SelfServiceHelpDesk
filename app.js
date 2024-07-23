@@ -8,6 +8,7 @@ require('dotenv').config();
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const MongoStore = require('connect-mongo');
 
 main().catch(err => console.log(err));
 async function main() {
@@ -24,7 +25,15 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
-app.use(session({ secret: 'hardware', resave: false, saveUninitialized: false }));
+app.use(session({ 
+  secret: 'hardware', 
+  resave: false, 
+  saveUninitialized: false,
+  store: MongoStore.create({
+    client: mongoose.connection.getClient(),
+  }),
+  cookie: { maxAge: 15 * 60 * 1000 } // 15 minutes
+}));
 app.use(passport.session());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
