@@ -14,11 +14,11 @@ input, button, select {
   width: 100%;
 }
 
-form > div {
+.ticketForm > div {
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
-form > button {
+.Ticketform > button {
   margin-top: 2.5rem;
 }

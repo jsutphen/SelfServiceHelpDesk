@@ -20,7 +20,7 @@ function initLayout() {
   const hardwareInstallationFields = document.querySelector('#hardwareInstallationFields');
   hardwareInstallationFields.style.display = 'none';
 
-  const form_submit = document.querySelector('form button');
+  const form_submit = document.querySelector('.ticketForm button');
   form_submit.style.display = 'none';
 
   const ticketTypeSelector = document.querySelector('#ticketType');

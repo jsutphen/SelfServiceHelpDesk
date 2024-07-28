@@ -7,7 +7,7 @@ block content
   h2 Ticket Erstellen 
   if user 
     p Angemeldet mit Nutzer: #{user.username}
-  form(method="POST")
+  form.ticketForm(method="POST")
     div
       label(for="ticketType") 
       select#ticketType(name="ticketType") 
