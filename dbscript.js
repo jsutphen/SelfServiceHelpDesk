@@ -5,7 +5,8 @@ require('dotenv').config();
 async function main() {
   await mongoose.connect(process.env.DB);
   const hardwareInstallation = new TicketType.TicketType({
-    typeName: 'hardwareInstallation',
+    typeName: 'Hardware-Installation',
+    shortName: 'hardwareInstallation',
     additionalFieldNames: [
       'Alter Standort',
       'Neuer Standort',
@@ -13,6 +14,8 @@ async function main() {
     ],
   });
   await hardwareInstallation.save();
+  
+  // await hardwareInstallation.save();
   await mongoose.disconnect();
 }
 main().catch((err) => console.log(err));
