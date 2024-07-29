@@ -1,26 +1,28 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const ticketSchema = new mongoose.Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: { type: String, required: true },
-  time: { type: Date, required: true, default: Date.now() }, 
-},
-{
-  toJSON: { virtuals: true }
+const ticketSchema = new mongoose.Schema(
+  {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    time: { type: Date, required: true, default: Date.now() },
+  },
+  {
+    toJSON: { virtuals: true },
+  },
+);
+
+ticketSchema.virtual('name').get(function () {
+  return `${this.firstName} ${this.lastName}`;
 });
 
-ticketSchema.virtual('name').get(function() { 
-  return this.firstName + ' ' + this.lastName;
-});
-
-ticketSchema.virtual('prettyDate').get(function() {
+ticketSchema.virtual('prettyDate').get(function () {
   const year = this.time.getFullYear();
   const month = this.time.getMonth();
   const day = this.time.getDate();
-  return year + '/' + month + '/' + day
+  return `${year}/${month}/${day}`;
 });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
 
-module.exports = Ticket
+module.exports = Ticket;
