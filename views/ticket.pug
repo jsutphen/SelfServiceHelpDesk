@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1 Self Service Helpdesk 
+  h2 Ticket Erstellen 
+  form.ticketForm(method="POST")
+    each fieldName in additionalFieldNames
+      label(for="${fieldName}") #{fieldName}
+      input#fieldName(type="text", name=`${fieldName}`) 
+    button(type="submit") Absenden
