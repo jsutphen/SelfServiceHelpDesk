@@ -5,19 +5,32 @@ const passport = require('passport');
 const Ticket = require('../models/Ticket');
 const HardwareInstallationTicket = require('../models/HardwareInstallationTicket');
 const User = require('../models/User');
+const TicketType = require('../models/TicketType');
 
 const router = express.Router();
 
-/* GET home page. */
-router.get('/', (req, res) => {
-  res.render('index', { user: req.user });
-});
+router.get('/', asyncHandler(async (req, res) => {
+  const ticketTypes = await TicketType.TicketType.find({});
+  res.render('index', { ticketTypes });
+  // res.send(ticketTypes);
+}));
 
-router.get('/new-ticket', (req, res) => {
-  res.render('newTicket');
-});
+router.get('/:ticketType', asyncHandler(async (req, res, next) => {
+  const ticketType = await TicketType.TicketType.findOne({ typeName: req.params.ticketType });
+  if (!ticketType) {
+    return next();
+  }
 
-router.post('/new-ticket', asyncHandler(async (req, res) => {
+  return res.render('ticket', { additionalFieldNames: ticketType.additionalFieldNames });
+  // return res.send(ticketType);
+}));
+
+router.post('/:ticketType', asyncHandler(async (req, res, next) => {
+  const ticketType = await TicketType.TicketType.find({ name: req.params.ticketType });
+  if (!ticketType) {
+    return next();
+  }
+  
   let ticket;
   if (req.body.ticketType === 'hardwareInstallation') {
     ticket = new HardwareInstallationTicket({
