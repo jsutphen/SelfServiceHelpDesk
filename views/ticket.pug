@@ -4,6 +4,12 @@ block content
   h1 Self Service Helpdesk 
   h2 Ticket Erstellen 
   form.ticketForm(method="POST")
+    label(for="firstName") Vorname
+    input#firstName(type="text", name='firstName') 
+    label(for="lastName") Nachname 
+    input#lastName(type="text", name='lastName') 
+    label(for="email") E-Mail 
+    input#email(type="text", name='email') 
     each fieldName in additionalFieldNames
       label(for="${fieldName}") #{fieldName}
       input#fieldName(type="text", name=`${fieldName}`) 
