@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const ticketTypeSchema = new mongoose.Schema(
   {
+    shortName: { type: String, required: true },
     typeName: { type: String, required: true },
     additionalFieldNames: [{ type: String }],
   },
