@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const TicketType = require('./TicketType');
 
 const ticketSchema = new mongoose.Schema(
   {
@@ -6,6 +7,8 @@ const ticketSchema = new mongoose.Schema(
     lastName: { type: String, required: true },
     email: { type: String, required: true },
     time: { type: Date, required: true, default: Date.now() },
+    ticketType: { type: TicketType.ticketTypeSchema, required: true },
+    additionalFields: [{ type: Object }],
   },
   {
     toJSON: { virtuals: true },
