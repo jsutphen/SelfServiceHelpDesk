@@ -1,17 +1,3 @@
-function handleTicketTypeChange(ticketType) {
-  if (ticketType === 'pleaseChoose') {
-    pleaseChoose_layout();
-  }
-  if (ticketType == 'hardwareInstallation') {
-    hardwareInstallationLayout();
-  }
-}
-
-
-document.addEventListener('DOMContentLoaded', function() {
-  initLayout();
-});
-
 function initLayout() {
   // layout
   const contactFields = document.querySelector('#contactFields')
@@ -25,16 +11,18 @@ function initLayout() {
 
   const ticketTypeSelector = document.querySelector('#ticketType');
   ticketTypeSelector.value = 'pleaseChoose';
-  
+
   // logic
   ticketTypeSelector.addEventListener('change', () => {
     handleTicketTypeChange(ticketTypeSelector.value);
   });
-
-  handleTicketTypeChange();
 }
 
-function pleaseChoose_layout() {
+document.addEventListener('DOMContentLoaded', () => {
+  initLayout();
+});
+
+function pleaseChooseLayout() {
   initLayout();
 }
 
@@ -46,10 +34,19 @@ function hardwareInstallationLayout() {
 
   const contactFields = document.querySelector('#contactFields')
   contactFields.style.display = 'block';
-  
+
   const hardwareInstallationFields = document.querySelector('#hardwareInstallationFields');
   hardwareInstallationFields.style.display = 'block';
 
   const form_submit = document.querySelector('form button');
   form_submit.style.display = 'block';
+}
+
+function handleTicketTypeChange(ticketType) {
+  if (ticketType === 'pleaseChoose') {
+    pleaseChooseLayout();
+  }
+  if (ticketType === 'hardwareInstallation') {
+    hardwareInstallationLayout();
+  }
 }
