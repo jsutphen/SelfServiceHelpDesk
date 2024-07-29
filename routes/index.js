@@ -3,7 +3,6 @@ const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const Ticket = require('../models/Ticket');
-const HardwareInstallationTicket = require('../models/HardwareInstallationTicket');
 const User = require('../models/User');
 const TicketType = require('../models/TicketType');
 
@@ -15,8 +14,10 @@ router.get('/', asyncHandler(async (req, res) => {
   // res.send(ticketTypes);
 }));
 
-router.get('/:ticketType', asyncHandler(async (req, res, next) => {
-  const ticketType = await TicketType.TicketType.findOne({ typeName: req.params.ticketType });
+router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) => {
+  const ticketType = await TicketType.TicketType.findOne(
+    { shortName: req.params.ticketTypeShortName },
+  );
   if (!ticketType) {
     return next();
   }
@@ -25,38 +26,33 @@ router.get('/:ticketType', asyncHandler(async (req, res, next) => {
   // return res.send(ticketType);
 }));
 
-router.post('/:ticketType', asyncHandler(async (req, res, next) => {
-  const ticketType = await TicketType.TicketType.find({ name: req.params.ticketType });
-  if (!ticketType) {
-    return next();
+router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) => {
+  const ticketType = await TicketType.TicketType.find(
+    { shortName: req.params.ticketTypeShortName },
+  );
+
+  if (ticketType.length === 0) {
+    return;
   }
-  
-  let ticket;
-  if (req.body.ticketType === 'hardwareInstallation') {
-    ticket = new HardwareInstallationTicket({
-      oldLocation: req.body.oldLocation,
-      newLocation: req.body.newLocation,
-      hardware: req.body.hardware,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-    });
-  } else {
-    ticket = new Ticket({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-    });
-  }
+  const ticket = new Ticket({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+  });
+
+  ticketType.additionalFieldNames.forEach((fieldName) => {
+    ticket.additionalFields[fieldName] = req.body[fieldName];
+  });
+
   let id;
   await ticket.save().then((savedTicket) => {
     id = savedTicket.id;
   });
   // prettify id
-  // id is very, very likely also unique with only 14 characters
+  // id is very, very likely also unique with only 12 characters
   // as it is made up of 4 bytes of timestamp and additional
   // random bytes
-  id = `${id.substring(0, 4)}-${id.substring(5, 9)}-${id.substring(10, 14)}`;
+  id = `${id.substring(0, 4)}-${id.substring(4, 8)}-${id.substring(8, 12)}`;
   res.render('submissionComplete', { id });
 }));
 
@@ -74,23 +70,26 @@ router.post('/signup', asyncHandler(async (req, res, next) => {
   if (alreadyExistsCheck != null) {
     // res.send(alreadyExistsCheck )
     res.render('signUp', { userError: 'Dieser Nutzername ist bereits vergeben!' });
-  }
-  bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
-    if (err) {
-      next(err);
-    }
-    const user = new User({
-      username: req.body.username,
-      password: hashedPassword,
-    });
-    await user.save();
-    req.login(user, (loginErr) => {
-      if (loginErr) {
-        next(loginErr);
+  } else {
+    bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
+      if (err) {
+        next(err);
+      } else {
+        const user = new User({
+          username: req.body.username,
+          password: hashedPassword,
+        });
+        await user.save();
+        req.login(user, (loginErr) => {
+          if (loginErr) {
+            next(loginErr);
+          } else {
+            res.redirect('/');
+          }
+        });
       }
-      res.redirect('/');
     });
-  });
+  }
 }));
 
 router.get('/login', (req, res) => {
@@ -101,7 +100,7 @@ router.post(
   '/login',
   passport.authenticate('local', {
     successRedirect: '/',
-    failureRedirect: '/',
+    failureRedirect: '/login', // Changed to '/login' for clarity
   }),
 );
 
