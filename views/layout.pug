@@ -11,8 +11,12 @@ html
       ul
         li
           if !user
-            div
+            span
               a(href="login") Login
           else 
               a(href="logout") Logout
+        li  | 
+          if !user
+            span
+              a(href='signup') Sign Up
     block content

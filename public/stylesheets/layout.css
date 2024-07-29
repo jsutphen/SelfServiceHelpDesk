@@ -22,3 +22,7 @@ input, button, select {
 .Ticketform > button {
   margin-top: 2.5rem;
 }
+
+nav li {
+  display: inline;
+}
