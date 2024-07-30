@@ -11,6 +11,6 @@ block content
     label(for="email") E-Mail 
     input#email(type="text", name='email') 
     each fieldName in additionalFieldNames
-      label(for="${fieldName}") #{fieldName}
-      input#fieldName(type="text", name=`${fieldName}`) 
+      label(for=`${fieldName}`) #{fieldName}
+      input(id=`${fieldName}` type="text", name=`${fieldName}`) 
     button(type="submit") Absenden
