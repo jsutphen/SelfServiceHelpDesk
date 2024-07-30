@@ -19,7 +19,7 @@ router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) =
     { shortName: req.params.ticketTypeShortName },
   );
   if (!ticketType) {
-    return next();
+    res.redirect('/');
   }
 
   return res.render('ticket', { additionalFieldNames: ticketType.additionalFieldNames });
@@ -27,21 +27,24 @@ router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) =
 }));
 
 router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) => {
-  const ticketType = await TicketType.TicketType.find(
+  const ticketType = await TicketType.TicketType.findOne(
     { shortName: req.params.ticketTypeShortName },
   );
 
-  if (ticketType.length === 0) {
-    return;
+  if (!ticketType) {
+    res.redirect('/');
   }
+
   const ticket = new Ticket({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
+    ticketType,
+    additionalFields: new Map(),
   });
 
   ticketType.additionalFieldNames.forEach((fieldName) => {
-    ticket.additionalFields[fieldName] = req.body[fieldName];
+    ticket.additionalFields.set(fieldName, req.body[fieldName]);
   });
 
   let id;
