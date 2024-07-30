@@ -8,7 +8,10 @@ const ticketSchema = new mongoose.Schema(
     email: { type: String, required: true },
     time: { type: Date, required: true, default: Date.now() },
     ticketType: { type: TicketType.ticketTypeSchema, required: true },
-    additionalFields: [{ type: Object }],
+    additionalFields: {
+      type: Map,
+      of: String,
+    },
   },
   {
     toJSON: { virtuals: true },
