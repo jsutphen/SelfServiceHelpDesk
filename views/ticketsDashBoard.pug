@@ -2,6 +2,14 @@ extends layout
 
 block content
   h1 Tickets
-  each ticket in tickets
-    ul
-      li #{ticket.name} #{ticket.email} #{ticket.prettyDate}
+  if user
+    div.ticketsDashboardTable
+      p Anfrage von
+      p Typ
+      p Datum
+      each ticket in tickets
+        p #{ticket.name} 
+        p #{ticket.ticketType.typeName} 
+        p #{ticket.prettyDate}
+  else 
+    p Melden Sie sich an, um Tickets zu sehen.
