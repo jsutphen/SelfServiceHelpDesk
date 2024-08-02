@@ -5,16 +5,16 @@ const passport = require('passport');
 const Ticket = require('../models/Ticket');
 const User = require('../models/User');
 const TicketType = require('../models/TicketType');
+const { Field } = require('../models/Field');
 
 const router = express.Router();
 
 router.get('/', asyncHandler(async (req, res) => {
   const ticketTypes = await TicketType.TicketType.find({});
   res.render('index', { ticketTypes });
-  // res.send(ticketTypes);
 }));
 
-router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) => {
+router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   const ticketType = await TicketType.TicketType.findOne(
     { shortName: req.params.ticketTypeShortName },
   );
@@ -23,10 +23,9 @@ router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) =
   }
 
   return res.render('ticket', { additionalFieldNames: ticketType.additionalFieldNames });
-  // return res.send(ticketType);
 }));
 
-router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) => {
+router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   const ticketType = await TicketType.TicketType.findOne(
     { shortName: req.params.ticketTypeShortName },
   );
@@ -40,26 +39,21 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res, next) 
     lastName: req.body.lastName,
     email: req.body.email,
     ticketType,
-    additionalFields: new Map(),
+    additionalFields: [],
   });
 
   ticketType.additionalFieldNames.forEach((fieldName) => {
-    ticket.additionalFields.set(fieldName, req.body[fieldName]);
+    const field = new Field({
+      name: fieldName,
+      value: req.body[fieldName.replace(' ', '_')],
+    });
+    ticket.additionalFields.push(field);
   });
 
-  let id;
-  await ticket.save().then((savedTicket) => {
-    id = savedTicket.id;
-  });
-  // prettify id
-  // id is very, very likely also unique with only 12 characters
-  // as it is made up of 4 bytes of timestamp and additional
-  // random bytes
-  id = `${id.substring(0, 4)}-${id.substring(4, 8)}-${id.substring(8, 12)}`;
-  res.render('submissionComplete', { id });
+  res.render('submissionComplete', { id: ticket.prettyID });
 }));
 
-router.get('/tickets', asyncHandler(async (req, res) => {
+router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
   const tickets = await Ticket.find({});
   res.render('ticketsDashBoard', { tickets });
 }));
