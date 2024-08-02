@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const TicketType = require('./TicketType');
+const { fieldSchema } = require('./Field');
 
 const ticketSchema = new mongoose.Schema(
   {
@@ -8,10 +9,7 @@ const ticketSchema = new mongoose.Schema(
     email: { type: String, required: true },
     time: { type: Date, required: true, default: Date.now() },
     ticketType: { type: TicketType.ticketTypeSchema, required: true },
-    additionalFields: {
-      type: Map,
-      of: String,
-    },
+    additionalFields: [{ type: fieldSchema }],
   },
   {
     toJSON: { virtuals: true },
@@ -24,9 +22,13 @@ ticketSchema.virtual('name').get(function () {
 
 ticketSchema.virtual('prettyDate').get(function () {
   const year = this.time.getFullYear();
-  const month = this.time.getMonth();
+  const month = this.time.getMonth() + 1;
   const day = this.time.getDate();
   return `${year}/${month}/${day}`;
+});
+
+ticketSchema.virtual('prettyID').get(function () {
+  return `${this.id.substring(0, 4)}-${this.id.substring(4, 8)}-${this.id.substring(8, 12)}`;
 });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
