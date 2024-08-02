@@ -12,7 +12,7 @@ function ticketTest1() {
     email: 'john@doe.net',
     // possible gotcha: js dates are defined with monthINDEXES ... 0-11
     time: Date.UTC(2024, 6, 31, 12, 0, 0, 0),
-    ticketType,
+    ticketType: ticketType.id,
   });
 
   if (ticket.prettyDate === '2024/7/31') {
@@ -31,7 +31,7 @@ function ticketTest2() {
     firstName: 'John',
     lastName: 'Doe',
     email: 'john@doe.net',
-    ticketType,
+    ticketType: ticketType.id,
   });
 
   // prettyID is a string with three quadruples
