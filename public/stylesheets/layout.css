@@ -26,3 +26,18 @@ input, button, select {
 nav li {
   display: inline;
 }
+
+.ticketsDashboardTable {
+  display: grid;
+  grid-template-columns: auto auto auto;  
+  background-color: black;
+  gap: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.ticketsDashboardTable p {
+  background-color: white;
+  margin: 0;
+  padding: 10px;
+}
