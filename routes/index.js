@@ -38,23 +38,26 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    ticketType,
+    ticketType: ticketType.id,
     additionalFields: [],
   });
 
-  ticketType.additionalFieldNames.forEach((fieldName) => {
+  ticketType.additionalFieldNames.forEach(async (fieldName) => {
     const field = new Field({
       name: fieldName,
       value: req.body[fieldName.replace(' ', '_')],
     });
-    ticket.additionalFields.push(field);
+    ticket.additionalFields.push(field.id);
+    await field.save();
   });
+
+  await ticket.save();
 
   res.render('submissionComplete', { id: ticket.prettyID });
 }));
 
 router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
-  const tickets = await Ticket.find({});
+  const tickets = await Ticket.find({}).populate('ticketType').exec();
   res.render('ticketsDashBoard', { tickets });
 }));
 
