@@ -10,7 +10,7 @@ block content
     input#lastName(type="text", name='lastName') 
     label(for="email") E-Mail 
     input#email(type="text", name='email') 
-    each fieldName in additionalFieldNames
-      label(for=`${fieldName.replace(' ', '_')}`) #{fieldName}
-      input(id=`${fieldName.replace(' ', '_')}` type="text", name=`${fieldName.replace(' ', '_')}`) 
+    each fieldType in additionalFieldTypes
+      label(for=`${fieldType.shortName}`) #{fieldType.name}
+      input(id=`${fieldType.shortName}` type=`${fieldType.type}`, name=`${fieldType.shortName}`) 
     button(type="submit") Absenden
