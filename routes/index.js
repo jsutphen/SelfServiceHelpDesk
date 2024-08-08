@@ -4,31 +4,31 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const Ticket = require('../models/Ticket');
 const User = require('../models/User');
-const TicketType = require('../models/TicketType');
+const { TicketType } = require('../models/TicketType');
 const { Field } = require('../models/Field');
 
 const router = express.Router();
 
 router.get('/', asyncHandler(async (req, res) => {
-  const ticketTypes = await TicketType.TicketType.find({});
+  const ticketTypes = await TicketType.find({});
   res.render('index', { ticketTypes });
 }));
 
 router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
-  const ticketType = await TicketType.TicketType.findOne(
+  const ticketType = await TicketType.findOne(
     { shortName: req.params.ticketTypeShortName },
-  );
+  ).populate('additionalFieldTypes').exec();
   if (!ticketType) {
     res.redirect('/');
+  } else {
+    return res.render('ticket', { additionalFieldTypes: ticketType.additionalFieldTypes });
   }
-
-  return res.render('ticket', { additionalFieldNames: ticketType.additionalFieldNames });
 }));
 
 router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
-  const ticketType = await TicketType.TicketType.findOne(
+  const ticketType = await TicketType.findOne(
     { shortName: req.params.ticketTypeShortName },
-  );
+  ).populate('additionalFieldTypes').exec();
 
   if (!ticketType) {
     res.redirect('/');
@@ -42,10 +42,11 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
     additionalFields: [],
   });
 
-  ticketType.additionalFieldNames.forEach(async (fieldName) => {
+  ticketType.additionalFieldTypes.forEach(async (fieldType) => {
     const field = new Field({
-      name: fieldName,
-      value: req.body[fieldName.replace(' ', '_')],
+      fieldType: fieldType.id,
+      name: fieldType.name,
+      value: req.body[fieldType.shortName],
     });
     ticket.additionalFields.push(field.id);
     await field.save();
@@ -54,6 +55,14 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   await ticket.save();
 
   res.render('submissionComplete', { id: ticket.prettyID });
+}));
+
+router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
+  const unHyphenedPrettyId = req.params.ticketPrettyId.replaceAll('-', '');
+  const ticket = await Ticket.findById(unHyphenedPrettyId)
+    .populate('additionalFields')
+    .exec();
+  res.render('ticketDetail', { ticket });
 }));
 
 router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
