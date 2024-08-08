@@ -2,8 +2,21 @@ const mongoose = require('mongoose');
 const TicketType = require('./TicketType');
 const { fieldSchema } = require('./Field');
 
+function fourDigitRandomString() {
+  let result = '';
+  for (let i = 0; i < 4; i += 1) {
+    result += Math.floor(Math.random() * 36).toString(36);
+  }
+  return result;
+}
+
 const ticketSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      required: true,
+      default: `${Date.now().toString(36)}${fourDigitRandomString()}`,
+    },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true },
@@ -28,7 +41,8 @@ ticketSchema.virtual('prettyDate').get(function () {
 });
 
 ticketSchema.virtual('prettyID').get(function () {
-  return `${this.id.substring(0, 4)}-${this.id.substring(4, 8)}-${this.id.substring(8, 12)}`;
+  return `${this.id.substring(0, 4)}-${this.id.substring(4, 8)}`
+  + `-${this.id.substring(8, 12)}`;
 });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
