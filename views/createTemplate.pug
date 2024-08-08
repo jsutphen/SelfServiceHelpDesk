@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  form(method='POST')
+    label(for="shortName") Kurzname (erscheint in URL)
+    input#shortName(type="text" name="shortName")
+    label(for="typeName") Ticketname (erscheint in Überschrift)
+    input#typeName(type="text" name="typeName")
+    div#newFieldsContainer
+    button#addFields(type="button") Neue Felder erstellen
+    button(type="submit") Absenden
+
+
+  script.
+    window.fieldTypes = !{JSON.stringify(fieldTypes)};
+  script(src="/javascripts/createTemplate.js") 
+    
