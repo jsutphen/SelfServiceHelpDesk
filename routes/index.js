@@ -19,10 +19,9 @@ router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
     { shortName: req.params.ticketTypeShortName },
   ).populate('additionalFieldTypes').exec();
   if (!ticketType) {
-    res.redirect('/');
-  } else {
-    return res.render('ticket', { additionalFieldTypes: ticketType.additionalFieldTypes });
+    return res.redirect('/');
   }
+  return res.render('ticket', { additionalFieldTypes: ticketType.additionalFieldTypes });
 }));
 
 router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
