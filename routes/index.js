@@ -2,10 +2,12 @@ const express = require('express');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const mongoose = require('mongoose');
 const Ticket = require('../models/Ticket');
 const User = require('../models/User');
 const { TicketType } = require('../models/TicketType');
 const { Field } = require('../models/Field');
+const { FieldType } = require('../models/FieldType');
 
 const router = express.Router();
 
@@ -67,6 +69,47 @@ router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
 router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
   const tickets = await Ticket.find({}).populate('ticketType').exec();
   res.render('ticketsDashBoard', { tickets });
+}));
+
+router.get('/createTemplate', asyncHandler(async (req, res) => {
+  const fieldTypes = await FieldType.find();
+  res.render('createTemplate', { fieldTypes });
+}));
+
+router.post('/createTemplate', asyncHandler(async (req, res) => {
+  const ticketType = new TicketType({
+    shortName: req.body.shortName,
+    typeName: req.body.typeName,
+    additionalFieldTypes: [],
+  });
+
+  if (req.body.additionalFieldTypes) {
+    if (!Array.isArray(req.body.additionalFieldTypes)) {
+      req.body.additionalFieldTypes = [req.body.additionalFieldTypes];
+    }
+    req.body.additionalFieldTypes.forEach((fieldType) => {
+      ticketType.additionalFieldTypes.push(fieldType);
+    });
+  }
+
+  if (req.body.newFieldTypes) {
+    if (!Array.isArray(req.body.newFieldTypes)) {
+      req.body.newFieldTypes = [req.body.newFieldTypes];
+    }
+
+    req.body.newFieldTypes.forEach(async (fieldType) => {
+      const newFieldType = new FieldType({
+        name: fieldType.name,
+        type: fieldType.type,
+      });
+      ticketType.additionalFieldTypes.push(newFieldType.id);
+      await newFieldType.save();
+    });
+  }
+
+  await ticketType.save();
+
+  res.redirect('/');
 }));
 
 router.get('/signup', (req, res) => {
