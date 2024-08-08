@@ -2,7 +2,6 @@ const express = require('express');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const mongoose = require('mongoose');
 const Ticket = require('../models/Ticket');
 const User = require('../models/User');
 const { TicketType } = require('../models/TicketType');
