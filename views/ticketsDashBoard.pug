@@ -4,11 +4,14 @@ block content
   h1 Tickets
   if user
     div.ticketsDashboardTable
+      p Ticket-Nr.
       p Anfrage von
-      p Typ
-      p Datum
+      p Anfragetyp
+      p Anfragedatum
       each ticket in tickets
-        p #{ticket.name} 
+        p
+          a(href=`/ticketDetail/${ticket.prettyID}`)  #{ticket.prettyID} 
+        p #{ticket.name}
         p #{ticket.ticketType.typeName} 
         p #{ticket.prettyDate}
   else 
