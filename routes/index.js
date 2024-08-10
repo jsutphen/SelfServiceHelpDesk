@@ -71,8 +71,7 @@ router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
 }));
 
 router.get('/createTemplate', asyncHandler(async (req, res) => {
-  const fieldTypes = await FieldType.find();
-  res.render('createTemplate', { fieldTypes });
+  res.render('createTemplate');
 }));
 
 router.post('/createTemplate', asyncHandler(async (req, res) => {
@@ -82,27 +81,19 @@ router.post('/createTemplate', asyncHandler(async (req, res) => {
     additionalFieldTypes: [],
   });
 
-  if (req.body.additionalFieldTypes) {
-    if (!Array.isArray(req.body.additionalFieldTypes)) {
-      req.body.additionalFieldTypes = [req.body.additionalFieldTypes];
+  if (req.body.additionalFieldTypesNames && req.body.additionalFieldTypesTypes) {
+    if (!Array.isArray(req.body.additionalFieldTypesNames)
+        && !Array.isArray(req.body.additionalFieldTypesTypes)) {
+      req.body.additionalFieldTypesNames = [req.body.additionalFieldTypesNames];
+      req.body.additionalFieldTypesTypes = [req.body.additionalFieldTypesTypes];
     }
-    req.body.additionalFieldTypes.forEach((fieldType) => {
-      ticketType.additionalFieldTypes.push(fieldType);
-    });
-  }
-
-  if (req.body.newFieldTypes) {
-    if (!Array.isArray(req.body.newFieldTypes)) {
-      req.body.newFieldTypes = [req.body.newFieldTypes];
-    }
-
-    req.body.newFieldTypes.forEach(async (fieldType) => {
-      const newFieldType = new FieldType({
-        name: fieldType.name,
-        type: fieldType.type,
+    req.body.additionalFieldTypesNames.forEach(async (fieldTypeName, index) => {
+      const additionalFieldType = new FieldType({
+        name: fieldTypeName,
+        type: req.body.additionalFieldTypesTypes[index],
       });
-      ticketType.additionalFieldTypes.push(newFieldType.id);
-      await newFieldType.save();
+      ticketType.additionalFieldTypes.push(additionalFieldType._id);
+      await additionalFieldType.save();
     });
   }
 
@@ -146,13 +137,10 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
-router.post(
-  '/login',
-  passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login', // Changed to '/login' for clarity
-  }),
-);
+router.post('/login', passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+}));
 
 router.get('/logout', (req, res, next) => {
   req.logout((err) => {
