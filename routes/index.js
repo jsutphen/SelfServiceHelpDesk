@@ -66,15 +66,18 @@ router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
 }));
 
 router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
   const tickets = await Ticket.find({}).populate('ticketType').exec();
   res.render('ticketsDashBoard', { tickets });
 }));
 
 router.get('/createTemplate', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
   res.render('createTemplate');
 }));
 
 router.post('/createTemplate', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
   const ticketType = new TicketType({
     shortName: req.body.shortName,
     typeName: req.body.typeName,

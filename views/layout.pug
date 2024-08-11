@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title= title
+    title Self Service Helpdesk
     link(rel='stylesheet', href='/stylesheets/reset.css')
     link(rel='stylesheet', href='/stylesheets/systemFontStack.css')
     link(rel='stylesheet', href='/stylesheets/textStyle.css')
@@ -12,18 +12,21 @@ html
         li
           span 
             a(href="/") Home
-        li  | 
-          if !user
+        if !user
+          li  | 
             span
               a(href="/login") Login
-          else 
-              a(href="/logout") Logout
-        li  | 
-          if !user
+          li  | 
             span
               a(href='/signup') Sign Up
-        li 
-          if user
+        else 
+          li  | 
+            span  
+              a(href="/logout") Logout
+          li  | 
             span 
               a(href="/ticketsDashboard") Ticket-Dashboard
+          li  | 
+            span 
+              a(href='/createTemplate') Formular-Vorlage erstellen
     block content
