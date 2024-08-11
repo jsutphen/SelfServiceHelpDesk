@@ -58,6 +58,7 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
 }));
 
 router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
   const unHyphenedPrettyId = req.params.ticketPrettyId.replaceAll('-', '');
   const ticket = await Ticket.findById(unHyphenedPrettyId)
     .populate('additionalFields')
