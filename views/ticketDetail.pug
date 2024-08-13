@@ -5,5 +5,6 @@ block content
   p Name: #{ticket.firstName} #{ticket.lastName}
   p E-Mail: #{ticket.email}
   p Einreichungsdatum: #{ticket.prettyDate}
+  p Ticket-Typ: #{ticket.ticketType.typeName}
   each field of ticket.additionalFields
     p #{field.name}: #{field.value}
