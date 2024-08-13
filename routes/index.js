@@ -66,6 +66,19 @@ router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
   res.render('ticketDetail', { ticket });
 }));
 
+router.post('/ticketDetail/:ticketPrettyId/delete', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
+  const unHyphenedPrettyId = req.params.ticketPrettyId.replaceAll('-', '');
+  const ticket = await Ticket.findById(unHyphenedPrettyId);
+  if (ticket) {
+    ticket.additionalFields.forEach(async (field) => {
+      await Field.findByIdAndDelete(field);
+    });
+    await Ticket.findByIdAndDelete(ticket.id);
+  }
+  res.redirect('/ticketsDashBoard');
+}));
+
 router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
   const tickets = await Ticket.find({}).populate('ticketType').exec();

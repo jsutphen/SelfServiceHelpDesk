@@ -7,3 +7,5 @@ block content
   p Ticket-Typ: #{ticket.ticketType.typeName}
   each field of ticket.additionalFields
     p #{field.name}: #{field.value}
+  form(action=`/ticketDetail/${ticket.prettyID}/delete` method="POST")
+    button(type="submit") Löschen
