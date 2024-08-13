@@ -3,7 +3,6 @@ extends layout
 block content
   h1 Ticket: Detail
   p Name: #{ticket.firstName} #{ticket.lastName}
-  p E-Mail: #{ticket.email}
   p Einreichungsdatum: #{ticket.prettyDate}
   p Ticket-Typ: #{ticket.ticketType.typeName}
   each field of ticket.additionalFields
