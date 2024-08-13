@@ -1,14 +1,16 @@
 extends layout
 
 block content
+  h1 Ticket-Vorlage erstellen
   form(method='POST')
+    p Vorname, Nachname sind immer enthalten.
     label(for="shortName") Kurzname (erscheint in URL)
-    input#shortName(type="text" name="shortName")
+    input#shortName(type="text" name="shortName" required)
     label(for="typeName") Ticketname (erscheint in Überschrift)
-    input#typeName(type="text" name="typeName")
+    input#typeName(type="text" name="typeName" required)
     div#newFieldsContainer
-    button#addFields(type="button") Neue Felder erstellen
-    button(type="submit") Absenden
+    button#addFields(type="button") Feld hinzufügen
+    button(type="submit") Erstellen
 
 
   script(src="/javascripts/createTemplate.js") 
