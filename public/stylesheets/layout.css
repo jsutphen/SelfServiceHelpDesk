@@ -34,6 +34,7 @@ nav li {
   gap: 2px;
   padding-left: 2px;
   padding-right: 2px;
+  overflow-x: scroll;
 }
 
 .ticketsDashboardTable p {
