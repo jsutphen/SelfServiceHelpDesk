@@ -61,6 +61,7 @@ router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
   const unHyphenedPrettyId = req.params.ticketPrettyId.replaceAll('-', '');
   const ticket = await Ticket.findById(unHyphenedPrettyId)
     .populate('additionalFields')
+    .populate('ticketType')
     .exec();
   res.render('ticketDetail', { ticket });
 }));
