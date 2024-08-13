@@ -9,7 +9,6 @@ function ticketTest1() {
   const ticket = new Ticket({
     firstName: 'John',
     lastName: 'Doe',
-    email: 'john@doe.net',
     // possible gotcha: js dates are defined with monthINDEXES ... 0-11
     time: Date.UTC(2024, 6, 31, 12, 0, 0, 0),
     ticketType: ticketType.id,
@@ -30,7 +29,6 @@ function ticketTest2() {
   const ticket = new Ticket({
     firstName: 'John',
     lastName: 'Doe',
-    email: 'john@doe.net',
     ticketType: ticketType.id,
   });
 
@@ -45,5 +43,21 @@ function ticketTest2() {
   }
 }
 
+function ticketTest3() {
+  const ticketType = new TicketType.TicketType({
+    shortName: 'testType',
+    typeName: 'Test Type',
+  });
+
+  const ticket = new Ticket({
+    firstName: 'John',
+    lastName: 'Doe',
+    ticketType: ticketType.id,
+  });
+
+  console.log(ticket.id);
+}
+
 ticketTest1();
 ticketTest2();
+ticketTest3();
