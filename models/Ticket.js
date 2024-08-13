@@ -15,7 +15,9 @@ const ticketSchema = new mongoose.Schema(
     _id: {
       type: String,
       required: true,
-      default: `${Date.now().toString(36)}${fourDigitRandomString()}`,
+      default() {
+        return `${Date.now().toString(36)}${fourDigitRandomString()}`;
+      },
     },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
