@@ -37,7 +37,6 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   const ticket = new Ticket({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    email: req.body.email,
     ticketType: ticketType.id,
     additionalFields: [],
   });
