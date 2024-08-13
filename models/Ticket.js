@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const TicketType = require('./TicketType');
-const { fieldSchema } = require('./Field');
 
 function fourDigitRandomString() {
   let result = '';
