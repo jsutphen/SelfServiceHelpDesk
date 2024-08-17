@@ -1,13 +1,14 @@
 const newFieldButton = document.querySelector('#addFields');
-let newFieldsIndex = 0;
 newFieldButton.addEventListener('click', () => {
   const newFieldsContainer = document.querySelector('#newFieldsContainer');
+  const additionalFieldGroup = document.createElement('div');
+  additionalFieldGroup.className = 'additionalFieldGroup';
 
   // name field for new additionalField
   const name = document.createElement('input');
   name.name = 'additionalFieldTypesNames';
   name.placeholder = 'Feldname';
-  newFieldsContainer.append(name);
+  additionalFieldGroup.append(name);
 
   // html type of the additionalField
   const typeSelect = document.createElement('select');
@@ -23,7 +24,22 @@ newFieldButton.addEventListener('click', () => {
   optionDate.innerHTML = 'Datum';
   typeSelect.append(optionDate);
 
-  newFieldsContainer.append(typeSelect);
+  additionalFieldGroup.append(typeSelect);
 
-  newFieldsIndex += 1;
+  const deleteButton = document.createElement('button');
+  deleteButton.innerHTML = 'Entfernen';
+  deleteButton.type = 'button';
+  additionalFieldGroup.append(deleteButton);
+  deleteButton.addEventListener('click', () => {
+    deleteButton.parentElement.parentElement.removeChild(deleteButton.parentElement);
+  });
+
+  newFieldsContainer.append(additionalFieldGroup);
+});
+
+const deleteField = document.querySelectorAll('.additionalFieldGroup > button');
+deleteField.forEach((element) => {
+  element.addEventListener('click', () => {
+    element.parentElement.parentElement.removeChild(element.parentElement);
+  });
 });
