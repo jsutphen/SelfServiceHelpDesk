@@ -140,7 +140,7 @@ router.post('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) 
   const prevAdditionalFieldTypes = ticketType.additionalFieldTypes;
   ticketType.additionalFieldTypes = [];
   prevAdditionalFieldTypes.forEach(async (id /* type mongoose.Types.ObjectId */) => {
-    if (req.body[id]) {
+    if (req.body[id.toString()]) {
       ticketType.additionalFieldTypes.push(id);
       await FieldType.findByIdAndUpdate(id, { name: req.body[id] });
     }
