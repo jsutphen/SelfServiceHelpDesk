@@ -42,3 +42,11 @@ nav li {
   margin: 0;
   padding: 10px;
 }
+
+.additionalFieldGroup {
+  display: flex;
+}
+
+.additionalFieldGroup button {
+  flex: 0;
+}
