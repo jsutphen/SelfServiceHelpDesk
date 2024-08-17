@@ -131,6 +131,49 @@ router.get('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) =
   res.render('editTemplate', { ticketType });
 }));
 
+router.post('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) => {
+  const ticketType = await TicketType.findOne({ shortName: req.params.ticketTypeShortName });
+
+  // go through all previously saved additionalFieldTypes in ticketType,
+  // keep the ones submitted in the form (the ones not deleted from the form)
+  // and update their name properties
+  const prevAdditionalFieldTypes = ticketType.additionalFieldTypes;
+  ticketType.additionalFieldTypes = [];
+  prevAdditionalFieldTypes.forEach(async (id /* type mongoose.Types.ObjectId */) => {
+    if (req.body[id]) {
+      ticketType.additionalFieldTypes.push(id);
+      await FieldType.findByIdAndUpdate(id, { name: req.body[id] });
+    }
+  });
+
+  // when fields are added on the form, their html name attribute will be
+  // additionalFieldTypesNames and additionalFieldTypesTypes, which will be
+  // arrays if more than one field is added
+  if (req.body.additionalFieldTypesNames && req.body.additionalFieldTypesTypes) {
+    if (!Array.isArray(req.body.additionalFieldTypesNames)
+        && !Array.isArray(req.body.additionalFieldTypesTypes)) {
+      req.body.additionalFieldTypesNames = [req.body.additionalFieldTypesNames];
+      req.body.additionalFieldTypesTypes = [req.body.additionalFieldTypesTypes];
+    }
+    req.body.additionalFieldTypesNames.forEach(async (fieldTypeName, index) => {
+      const additionalFieldType = new FieldType({
+        name: fieldTypeName,
+        type: req.body.additionalFieldTypesTypes[index],
+      });
+      ticketType.additionalFieldTypes.push(additionalFieldType._id);
+      await additionalFieldType.save();
+    });
+  }
+
+  await ticketType.save();
+
+  await TicketType.findByIdAndUpdate(ticketType.id, ticketType);
+  const updatedTicketType = await TicketType.findById(ticketType)
+    .populate('additionalFields')
+    .exec();
+  res.render('editTemplate', { updatedTicketType });
+}));
+
 router.get('/signup', (req, res) => {
   res.render('signUp');
 });
