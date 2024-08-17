@@ -1,0 +1,7 @@
+extends layout
+
+block content
+  h1 All templates
+  each ticketType in allTicketTypes
+    p
+      a(href=`/editTemplate/${ticketType.shortName}`) #{ticketType.typeName}
