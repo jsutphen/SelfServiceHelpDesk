@@ -6,7 +6,7 @@ block content
   form(method="post") 
     each fieldType in ticketType.additionalFieldTypes
       div.additionalFieldGroup
-        input(type="text" value=`${fieldType.name}`)
+        input(type="text" value=`${fieldType.name}` name=`${fieldType.id}`)
         button(type="button") Entfernen
     div#newFieldsContainer
     button#addFields(type="button") Feld hinzufügen
