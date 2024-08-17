@@ -119,6 +119,18 @@ router.post('/createTemplate', asyncHandler(async (req, res) => {
   res.redirect('/');
 }));
 
+router.get('/manageTemplates', asyncHandler(async (req, res) => {
+  const allTicketTypes = await TicketType.find({});
+  res.render('manageTemplates', { allTicketTypes });
+}));
+
+router.get('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) => {
+  const ticketType = await TicketType.findOne({ shortName: req.params.ticketTypeShortName })
+    .populate('additionalFieldTypes')
+    .exec();
+  res.render('editTemplate', { ticketType });
+}));
+
 router.get('/signup', (req, res) => {
   res.render('signUp');
 });
