@@ -1,0 +1,15 @@
+extends layout
+
+block content 
+  h1 Bearbeiten: #{ticketType.typeName}
+  p Felder für Vorname und Nachname sind immer enthalten.
+  form(method="post") 
+    each fieldType in ticketType.additionalFieldTypes
+      div.additionalFieldGroup
+        input(type="text" value=`${fieldType.name}`)
+        button(type="button") Entfernen
+    div#newFieldsContainer
+    button#addFields(type="button") Feld hinzufügen
+    button(type="submit") Aktualisieren
+
+  script(src="/javascripts/createTemplate.js") 
