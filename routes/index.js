@@ -134,16 +134,9 @@ router.get('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) =
 router.post('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) => {
   const ticketType = await TicketType.findOne({ shortName: req.params.ticketTypeShortName });
 
-  // go through all previously saved additionalFieldTypes in ticketType,
-  // keep the ones submitted in the form (the ones not deleted from the form)
-  // and update their name properties
-  const prevAdditionalFieldTypes = ticketType.additionalFieldTypes;
-  ticketType.additionalFieldTypes = [];
-  prevAdditionalFieldTypes.forEach(async (id /* type mongoose.Types.ObjectId */) => {
-    if (req.body[id.toString()]) {
-      ticketType.additionalFieldTypes.push(id);
-      await FieldType.findByIdAndUpdate(id, { name: req.body[id] });
-    }
+  // go through all additionalFieldTypes in ticketType and update their name properties
+  ticketType.additionalFieldTypes.forEach(async (id /* type mongoose.Types.ObjectId */) => {
+    await FieldType.findByIdAndUpdate(id, { name: req.body[id.toString()] });
   });
 
   // when fields are added on the form, their html name attribute will be
