@@ -36,10 +36,3 @@ newFieldButton.addEventListener('click', () => {
 
   newFieldsContainer.append(additionalFieldGroup);
 });
-
-const deleteField = document.querySelectorAll('.additionalFieldGroup > button');
-deleteField.forEach((element) => {
-  element.addEventListener('click', () => {
-    element.parentElement.parentElement.removeChild(element.parentElement);
-  });
-});
