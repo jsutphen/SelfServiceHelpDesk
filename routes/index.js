@@ -168,10 +168,8 @@ router.post('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) 
   await ticketType.save();
 
   await TicketType.findByIdAndUpdate(ticketType.id, ticketType);
-  const updatedTicketType = await TicketType.findById(ticketType)
-    .populate('additionalFields')
-    .exec();
-  res.render('editTemplate', { updatedTicketType });
+  const updatedTicketType = await TicketType.findById(ticketType);
+  res.redirect(`/editTemplate/${updatedTicketType.shortName}`);
 }));
 
 router.get('/signup', (req, res) => {
