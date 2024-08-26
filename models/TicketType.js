@@ -8,6 +8,7 @@ const ticketTypeSchema = new mongoose.Schema(
     // typeName is the full display name of the ticket type
     typeName: { type: String, required: true },
     additionalFieldTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FieldType' }],
+    active: { type: Boolean, required: true, default: false },
   },
 );
 
