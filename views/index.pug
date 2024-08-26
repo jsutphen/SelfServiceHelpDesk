@@ -4,5 +4,6 @@ block content
   h1 Self Service Helpdesk 
   h2 Ticket Erstellen 
   each ticketType in ticketTypes
-    a(href=`ticket/${ticketType.shortName}`) #{ticketType.typeName}
-    br
+    if ticketType.active
+      a(href=`ticket/${ticketType.shortName}`) #{ticketType.typeName}
+      br

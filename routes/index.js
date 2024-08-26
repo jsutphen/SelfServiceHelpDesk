@@ -17,7 +17,7 @@ router.get('/', asyncHandler(async (req, res) => {
 
 router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   const ticketType = await TicketType.findOne(
-    { shortName: req.params.ticketTypeShortName },
+    { shortName: req.params.ticketTypeShortName, active: true },
   ).populate('additionalFieldTypes').exec();
   if (!ticketType) {
     return res.redirect('/');
@@ -27,7 +27,7 @@ router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
 
 router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   const ticketType = await TicketType.findOne(
-    { shortName: req.params.ticketTypeShortName },
+    { shortName: req.params.ticketTypeShortName, active: true },
   ).populate('additionalFieldTypes').exec();
 
   if (!ticketType) {
@@ -87,7 +87,8 @@ router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
 
 router.get('/createTemplate', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
-  res.render('createTemplate');
+  const allFieldTypes = await FieldType.find();
+  res.render('createTemplate', { allFieldTypes });
 }));
 
 router.post('/createTemplate', asyncHandler(async (req, res) => {
@@ -96,6 +97,7 @@ router.post('/createTemplate', asyncHandler(async (req, res) => {
     shortName: req.body.shortName,
     typeName: req.body.typeName,
     additionalFieldTypes: [],
+    active: true,
   });
 
   if (req.body.additionalFieldTypesNames && req.body.additionalFieldTypesTypes) {
@@ -124,15 +126,15 @@ router.get('/manageTemplates', asyncHandler(async (req, res) => {
   res.render('manageTemplates', { allTicketTypes });
 }));
 
-router.get('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) => {
-  const ticketType = await TicketType.findOne({ shortName: req.params.ticketTypeShortName })
+router.get('/editTemplate/:ticketTypeId', asyncHandler(async (req, res) => {
+  const ticketType = await TicketType.findById(req.params.ticketTypeId)
     .populate('additionalFieldTypes')
     .exec();
   res.render('editTemplate', { ticketType });
 }));
 
-router.post('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) => {
-  const ticketType = await TicketType.findOne({ shortName: req.params.ticketTypeShortName });
+router.post('/editTemplate/:ticketTypeId', asyncHandler(async (req, res) => {
+  const ticketType = await TicketType.findById(req.params.ticketTypeId);
 
   // go through all additionalFieldTypes in ticketType and update their name properties
   ticketType.additionalFieldTypes.forEach(async (id /* type mongoose.Types.ObjectId */) => {
@@ -158,11 +160,17 @@ router.post('/editTemplate/:ticketTypeShortName', asyncHandler(async (req, res) 
     });
   }
 
-  await ticketType.save();
+  if (req.body.ticketTypeActive === 'on') {
+    ticketType.active = true;
+  } else {
+    ticketType.active = false;
+  }
 
-  await TicketType.findByIdAndUpdate(ticketType.id, ticketType);
-  const updatedTicketType = await TicketType.findById(ticketType);
-  res.redirect(`/editTemplate/${updatedTicketType.shortName}`);
+  ticketType.shortName = req.body.shortName;
+  ticketType.typeName = req.body.typeName;
+
+  await ticketType.save();
+  res.redirect(`/editTemplate/${ticketType.id}`);
 }));
 
 router.get('/signup', (req, res) => {
