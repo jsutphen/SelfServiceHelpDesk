@@ -4,6 +4,10 @@ block content
   h1 Bearbeiten: #{ticketType.typeName}
   p Felder für Vorname und Nachname sind immer enthalten.
   form(method="post") 
+    label(for="typeName") Ticket-Name
+    input#typeName(type="text" name='typeName' value=`${ticketType.typeName}`)
+    label(for="shortName") Kurzname (erscheint in URL)
+    input#shortName(type="text", name="shortName" value=`${ticketType.shortName}`)
     each fieldType in ticketType.additionalFieldTypes
       div.additionalFieldGroup
         input(type="text" value=`${fieldType.name}` name=`${fieldType.id}`)
