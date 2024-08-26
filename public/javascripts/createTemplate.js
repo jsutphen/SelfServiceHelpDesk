@@ -24,6 +24,11 @@ newFieldButton.addEventListener('click', () => {
   optionDate.innerHTML = 'Datum';
   typeSelect.append(optionDate);
 
+  const optionTextarea = document.createElement('option');
+  optionTextarea.value = 'textarea';
+  optionTextarea.innerHTML = 'Text (Mehrere Zeilen)';
+  typeSelect.append(optionTextarea);
+
   additionalFieldGroup.append(typeSelect);
 
   const deleteButton = document.createElement('button');
