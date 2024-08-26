@@ -7,7 +7,7 @@ h2 {
   font-size: 2rem;
 }
 
-a, li, button, p, select, label, input {
+a, li, button, p, select, label, input, textarea {
   font-size: 1.7rem;
   font-weight: 600;
 }
