@@ -10,5 +10,8 @@ block content
     input#lastName(type="text", name='lastName') 
     each fieldType in additionalFieldTypes
       label(for=`${fieldType.shortName}`) #{fieldType.name}
-      input(id=`${fieldType.shortName}` type=`${fieldType.type}`, name=`${fieldType.shortName}`) 
+      if fieldType.type != 'textarea'
+        input(id=`${fieldType.shortName}` type=`${fieldType.type}`, name=`${fieldType.shortName}`) 
+      else 
+        textarea(id=`${fieldType.shortName}` type=`${fieldType.type}`, name=`${fieldType.shortName}`) 
     button(type="submit") Absenden
