@@ -7,29 +7,28 @@ html
     link(rel='stylesheet', href='/stylesheets/textStyle.css')
     link(rel='stylesheet', href='/stylesheets/layout.css')
   body
-    nav
-      ul
-        li
-          span 
-            a(href="/") Home
-        if !user
-          li  | 
-            span
+    div#gridContainer
+      button#menuToggle(type="button")  
+        img(src="/images/menu.svg", alt="", srcset="")
+      nav
+        ul
+          li
+            span 
+              a(href="/") Home
+          if !user
+            li  
               a(href="/login") Login
-          li  | 
-            span
+            li
               a(href='/signup') Sign Up
-        else 
-          li  | 
-            span  
+          else 
+            li
               a(href="/logout") Logout
-          li  | 
-            span 
+            li  
               a(href="/ticketsDashboard") Ticket-Dashboard
-          li  | 
-            span 
+            li
               a(href='/createTemplate') Formular-Vorlage erstellen
-          li  | 
-            span 
+            li
               a(href='/manageTemplates') Formular-Vorlagen bearbeiten
-    block content
+      div
+        block content
+    script(src="/javascripts/menuToggle.js") 
