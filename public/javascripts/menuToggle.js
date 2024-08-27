@@ -7,11 +7,11 @@ menuToggle.addEventListener('click', () => {
 
 function initLayout() {
   const gridContainer = document.querySelector('#gridContainer');
+  nav.style.display = 'block';
   if (gridContainer.clientWidth < 800) {
     nav.style.display = 'none';
     menuToggle.style.display = 'block';
   } else {
-    nav.style.display = 'block';
     menuToggle.style.display = 'none';
   }
 }
