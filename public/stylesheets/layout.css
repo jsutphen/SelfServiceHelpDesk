@@ -3,16 +3,17 @@ body {
   margin-right: auto;
   margin-top: 3rem;
   padding: 3rem;
-  max-width: fit-content;
 }
 
 #gridContainer {
+  width: 100%;
   max-width: 1200px;
   display: flex;
   flex-wrap: wrap;
 }
 
 #gridContainer div {
+  min-width: 400px;
   max-width: 100%;
 }
 
@@ -20,7 +21,7 @@ nav {
   background-color: rgb(241, 241, 241);
   margin-right: 1.5rem;
   padding: 1.5rem;
-  max-width: fit-content;
+  max-width: 400px;
 }
 
 #menuToggle {
