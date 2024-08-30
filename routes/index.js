@@ -11,11 +11,15 @@ const { FieldType } = require('../models/FieldType');
 const router = express.Router();
 
 router.get('/', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
+
   const ticketTypes = await TicketType.find({});
   res.render('index', { ticketTypes });
 }));
 
 router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
+
   const ticketType = await TicketType.findOne(
     { shortName: req.params.ticketTypeShortName, active: true },
   ).populate('additionalFieldTypes').exec();
@@ -26,6 +30,8 @@ router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
 }));
 
 router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
+  if (!req.user) res.redirect('/login');
+
   const ticketType = await TicketType.findOne(
     { shortName: req.params.ticketTypeShortName, active: true },
   ).populate('additionalFieldTypes').exec();
@@ -58,6 +64,8 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
 
 router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
+
   const unHyphenedPrettyId = req.params.ticketPrettyId.replaceAll('-', '');
   const ticket = await Ticket.findById(unHyphenedPrettyId)
     .populate('additionalFields')
@@ -68,6 +76,8 @@ router.get('/ticketDetail/:ticketPrettyId', asyncHandler(async (req, res) => {
 
 router.post('/ticketDetail/:ticketPrettyId/delete', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
+
   const unHyphenedPrettyId = req.params.ticketPrettyId.replaceAll('-', '');
   const ticket = await Ticket.findById(unHyphenedPrettyId);
   if (ticket) {
@@ -81,18 +91,23 @@ router.post('/ticketDetail/:ticketPrettyId/delete', asyncHandler(async (req, res
 
 router.get('/ticketsDashboard', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
+
   const tickets = await Ticket.find({}).populate('ticketType').exec();
   res.render('ticketsDashBoard', { tickets });
 }));
 
 router.get('/createTemplate', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
+
   const allFieldTypes = await FieldType.find();
   res.render('createTemplate', { allFieldTypes });
 }));
 
 router.post('/createTemplate', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
+
   const ticketType = new TicketType({
     shortName: req.body.shortName,
     typeName: req.body.typeName,
@@ -122,11 +137,15 @@ router.post('/createTemplate', asyncHandler(async (req, res) => {
 }));
 
 router.get('/manageTemplates', asyncHandler(async (req, res) => {
+  if (!req.user.isAdmin) res.redirect('/');
+
   const allTicketTypes = await TicketType.find({});
   res.render('manageTemplates', { allTicketTypes });
 }));
 
 router.get('/editTemplate/:ticketTypeId', asyncHandler(async (req, res) => {
+  if (!req.user.isAdmin) res.redirect('/');
+
   const ticketType = await TicketType.findById(req.params.ticketTypeId)
     .populate('additionalFieldTypes')
     .exec();
@@ -134,6 +153,8 @@ router.get('/editTemplate/:ticketTypeId', asyncHandler(async (req, res) => {
 }));
 
 router.post('/editTemplate/:ticketTypeId', asyncHandler(async (req, res) => {
+  if (!req.user.isAdmin) res.redirect('/');
+
   const ticketType = await TicketType.findById(req.params.ticketTypeId);
 
   // go through all additionalFieldTypes in ticketType and update their name properties
@@ -221,5 +242,39 @@ router.get('/logout', (req, res, next) => {
     return res.redirect('/');
   });
 });
+
+router.get('/userManagement', asyncHandler(async (req, res, next) => {
+  if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
+
+  const allUsers = await User.find();
+  res.render('userManagement', { allUsers });
+}));
+
+router.get('/users/:id', asyncHandler(async (req, res, next) => {
+  if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
+
+  const account = await User.findById(req.params.id);
+  if (account) {
+    res.render('user', { account });
+  }
+}));
+
+router.post('/users/:id', asyncHandler(async (req, res, next) => {
+  if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
+
+  const account = await User.findById(req.params.id);
+  if (account) {
+    if (req.body.isAdmin === 'on') {
+      account.isAdmin = true;
+    } else {
+      account.isAdmin = false;
+    }
+    await account.save();
+    res.render('user', { account });
+  }
+}));
 
 module.exports = router;
