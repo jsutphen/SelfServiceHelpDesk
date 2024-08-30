@@ -23,12 +23,15 @@ html
           else 
             li
               a(href="/logout") Logout
-            li  
-              a(href="/ticketsDashboard") Ticket-Dashboard
-            li
-              a(href='/createTemplate') Formular-Vorlage erstellen
-            li
-              a(href='/manageTemplates') Formular-Vorlagen bearbeiten
+            if user.isAdmin
+              li  
+                a(href="/ticketsDashboard") Ticket-Dashboard
+              li
+                a(href='/createTemplate') Formular-Vorlage erstellen
+              li
+                a(href='/manageTemplates') Formular-Vorlagen bearbeiten
+              li
+                a(href='/userManagement') Nutzerverwaltung
       div
         block content
     script(src="/javascripts/menuToggle.js") 

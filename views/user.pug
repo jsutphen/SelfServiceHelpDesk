@@ -1,0 +1,11 @@
+extends layout 
+
+block content 
+  h1 Nutzer: #{account.username}
+  form(method="post") 
+    label(for="isAdmin") Administrator:
+    if account.isAdmin
+      input#isAdmin(type="checkbox", name="isAdmin" checked style='width: auto; margin: 1.5rem')
+    else
+      input#isAdmin(type="checkbox", name="isAdmin" style='width: auto; margin: 1.5rem')
+    button(type="submit") Aktualisieren

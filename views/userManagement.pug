@@ -1,0 +1,8 @@
+extends layout 
+
+block content 
+  h1 Nutzerverwaltung
+
+  each user in allUsers 
+    a(href=`/users/${user.id}`) #{user.username}
+    br
