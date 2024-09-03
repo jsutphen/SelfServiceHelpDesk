@@ -2,6 +2,7 @@ const express = require('express');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const { body, param } = require('express-validator');
 const Ticket = require('../models/Ticket');
 const User = require('../models/User');
 const { TicketType } = require('../models/TicketType');
@@ -20,6 +21,8 @@ router.get('/', asyncHandler(async (req, res) => {
 router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
 
+  param('ticketTypeShortName')
+    .escape();
   const ticketType = await TicketType.findOne(
     { shortName: req.params.ticketTypeShortName, active: true },
   ).populate('additionalFieldTypes').exec();
@@ -32,6 +35,8 @@ router.get('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
 router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
 
+  param('ticketTypeShortName')
+    .escape();
   const ticketType = await TicketType.findOne(
     { shortName: req.params.ticketTypeShortName, active: true },
   ).populate('additionalFieldTypes').exec();
@@ -40,6 +45,10 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
     res.redirect('/');
   }
 
+  body('firstName')
+    .escape();
+  body('lastName')
+    .escape();
   const ticket = new Ticket({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -48,6 +57,8 @@ router.post('/ticket/:ticketTypeShortName', asyncHandler(async (req, res) => {
   });
 
   ticketType.additionalFieldTypes.forEach(async (fieldType) => {
+    body(fieldType.shortName)
+      .escape();
     const field = new Field({
       fieldType: fieldType.id,
       name: fieldType.name,
@@ -152,43 +163,47 @@ router.get('/editTemplate/:ticketTypeId', asyncHandler(async (req, res) => {
   res.render('editTemplate', { ticketType });
 }));
 
-router.post('/editTemplate/:ticketTypeId', asyncHandler(async (req, res) => {
-  if (!req.user.isAdmin) res.redirect('/');
+router.post('/editTemplate/:ticketTypeId',
+  body('shortName').escape(),
+  body('typeName').trim().escape(),
 
-  const ticketType = await TicketType.findById(req.params.ticketTypeId);
+  asyncHandler(async (req, res) => {
+    if (!req.user.isAdmin) res.redirect('/');
 
-  // go through all additionalFieldTypes in ticketType and update their name properties
-  ticketType.additionalFieldTypes.forEach(async (id /* type mongoose.Types.ObjectId */) => {
-    await FieldType.findByIdAndUpdate(id, { name: req.body[id.toString()] });
-  });
+    const ticketType = await TicketType.findById(req.params.ticketTypeId);
 
-  // when fields are added on the form, their html name attribute will be
-  // additionalFieldTypesNames and additionalFieldTypesTypes, which will be
-  // arrays if more than one field is added
-  if (req.body.additionalFieldTypesNames && req.body.additionalFieldTypesTypes) {
-    if (!Array.isArray(req.body.additionalFieldTypesNames)
-        && !Array.isArray(req.body.additionalFieldTypesTypes)) {
-      req.body.additionalFieldTypesNames = [req.body.additionalFieldTypesNames];
-      req.body.additionalFieldTypesTypes = [req.body.additionalFieldTypesTypes];
-    }
-    req.body.additionalFieldTypesNames.forEach(async (fieldTypeName, index) => {
-      const additionalFieldType = new FieldType({
-        name: fieldTypeName,
-        type: req.body.additionalFieldTypesTypes[index],
-      });
-      ticketType.additionalFieldTypes.push(additionalFieldType._id);
-      await additionalFieldType.save();
+    // go through all additionalFieldTypes in ticketType and update their name properties
+    ticketType.additionalFieldTypes.forEach(async (id /* type mongoose.Types.ObjectId */) => {
+      await FieldType.findByIdAndUpdate(id, { name: req.body[id.toString()] });
     });
-  }
 
-  if (req.body.ticketTypeActive === 'on') {
-    ticketType.active = true;
-  } else {
-    ticketType.active = false;
-  }
+    // when fields are added on the form, their html name attribute will be
+    // additionalFieldTypesNames and additionalFieldTypesTypes, which will be
+    // arrays if more than one field is added
+    if (req.body.additionalFieldTypesNames && req.body.additionalFieldTypesTypes) {
+      if (!Array.isArray(req.body.additionalFieldTypesNames)
+          && !Array.isArray(req.body.additionalFieldTypesTypes)) {
+        req.body.additionalFieldTypesNames = [req.body.additionalFieldTypesNames];
+        req.body.additionalFieldTypesTypes = [req.body.additionalFieldTypesTypes];
+      }
+      req.body.additionalFieldTypesNames.forEach(async (fieldTypeName, index) => {
+        const additionalFieldType = new FieldType({
+          name: fieldTypeName,
+          type: req.body.additionalFieldTypesTypes[index],
+        });
+        ticketType.additionalFieldTypes.push(additionalFieldType._id);
+        await additionalFieldType.save();
+      });
+    }
 
-  ticketType.shortName = req.body.shortName;
-  ticketType.typeName = req.body.typeName;
+    if (req.body.ticketTypeActive === 'on') {
+      ticketType.active = true;
+    } else {
+      ticketType.active = false;
+    }
+
+    ticketType.shortName = req.body.shortName;
+    ticketType.typeName = req.body.typeName;
 
   await ticketType.save();
   res.redirect(`/editTemplate/${ticketType.id}`);
