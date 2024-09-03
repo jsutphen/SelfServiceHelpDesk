@@ -118,6 +118,7 @@ router.get('/createTemplate', asyncHandler(async (req, res) => {
 
 router.post('/createTemplate', asyncHandler(async (req, res) => {
   if (!req.user) res.redirect('/login');
+  if (!req.user.isAdmin) res.redirect('/');
 
   const ticketType = new TicketType({
     shortName: req.body.shortName,
