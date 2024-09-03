@@ -19,5 +19,9 @@ block content
     else
       input#ticketTypeActive(type="checkbox", name="ticketTypeActive" style='width: auto; margin: 1.5rem') 
     button(type="submit") Aktualisieren
+  if error
+    p #{error}  
+  form(action=`${ticketType.id}/delete`, method="post") 
+    button(type="submit") Löschen 
 
   script(src="/javascripts/createTemplate.js") 
