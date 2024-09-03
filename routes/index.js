@@ -205,9 +205,33 @@ router.post('/editTemplate/:ticketTypeId',
     ticketType.shortName = req.body.shortName;
     ticketType.typeName = req.body.typeName;
 
-  await ticketType.save();
-  res.redirect(`/editTemplate/${ticketType.id}`);
-}));
+    await ticketType.save();
+    res.redirect(`/editTemplate/${ticketType.id}`);
+  }),
+);
+
+router.post('/editTemplate/:ticketTypeId/delete', 
+  asyncHandler(async (req, res) => {
+    if (!req.user.isAdmin) res.redirect('/');
+
+    const ticketType = await TicketType.findById(req.params.ticketTypeId)
+      .populate('additionalFieldTypes');
+    if (!ticketType) {
+      return res.redirect('/');
+    }
+    const allTickets = await Ticket.find();
+    const hasTickets = allTickets.some(
+      (ticket) => ticket.ticketType.equals(req.params.ticketTypeId),
+    );
+    if (hasTickets) {
+      const error = 'Lösche erst alle Tickets von diesem Typ';
+      res.render('editTemplate', { ticketType, error });
+    } else {
+      await TicketType.findByIdAndDelete(ticketType.id);
+      res.redirect('/manageTemplates');
+    }
+  }),
+);
 
 router.get('/signup', (req, res) => {
   res.render('signUp');
